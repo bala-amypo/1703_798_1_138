@@ -1,7 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.models.KeyShareRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.demo.models.KeyShareRequest;
 
-public interface KeyShareRequestRepository extends JpaRepository<KeyShareRequest,Long> {
+public interface KeyShareRequestRepository extends JpaRepository<KeyShareRequest, Long> {
 }
