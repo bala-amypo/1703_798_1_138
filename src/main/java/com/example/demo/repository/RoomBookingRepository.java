@@ -1,8 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.models.RoomBooking;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.demo.models.RoomBooking;
 
-public interface RoomBookingRepository extends JpaRepository<RoomBooking,Long> {
-
+public interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> {
 }
