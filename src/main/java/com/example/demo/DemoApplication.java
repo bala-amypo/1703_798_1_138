@@ -2,10 +2,10 @@ package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import jakarta.servlet.annotation.ServletComponentScan;
+import org.springframework.boot.web.servlet.ServletComponentScan; // ✅ CORRECT
 
 @SpringBootApplication
-@ServletComponentScan   // 🔴 REQUIRED
+@ServletComponentScan
 public class DemoApplication {
 
     public static void main(String[] args) {
