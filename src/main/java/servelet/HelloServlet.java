@@ -18,7 +18,6 @@ public class HelloServlet extends HttpServlet {
         this.message = "Hello Tomcat";
     }
 
-    // 🔴 REQUIRED by test
     public String getMessage() {
         return message;
     }
@@ -29,8 +28,6 @@ public class HelloServlet extends HttpServlet {
 
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.setContentType("text/plain");
-
-        // 🔴 REQUIRED by test
         resp.getWriter().write("Hello from servlet");
     }
 }
