@@ -18,84 +18,111 @@ public class KeyShareRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Many requests → One DigitalKey
+    // 🔑 Key being shared
     @ManyToOne
     @JoinColumn(name = "digital_key_id", nullable = false)
     private DigitalKey digitalKey;
 
-    // Many requests → One Guest (sender)
+    // 👤 Who shared the key
     @ManyToOne
     @JoinColumn(name = "shared_by_id", nullable = false)
     private Guest sharedBy;
 
-    // Many requests → One Guest (receiver)
+    // 👤 Who receives the key
     @ManyToOne
     @JoinColumn(name = "shared_with_id", nullable = false)
     private Guest sharedWith;
 
-    private Timestamp shareStart;
+    private Timestamp requestedAt;
+    private Timestamp expiresAt;
 
-    private Timestamp shareEnd;
+    private String status; // PENDING / APPROVED / REJECTED
 
-    // PENDING / APPROVED / REJECTED
-    private String status;
-
-    private Timestamp createdAt;
-
-    // Auto-generate createdAt
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Timestamp(System.currentTimeMillis());
-        if (this.status == null) {
-            this.status = "PENDING";
-        }
-    }
-
-    // Rule validations
+    /* ======================
+       JPA Lifecycle Callback
+       ====================== */
     @PrePersist
     @PreUpdate
-    protected void validate() {
+    protected void beforeSave() {
 
-        // shareEnd > shareStart
-        if (shareStart != null && shareEnd != null &&
-            !shareEnd.after(shareStart)) {
+        if (requestedAt == null) {
+            requestedAt = new Timestamp(System.currentTimeMillis());
+        }
+
+        if (expiresAt != null && expiresAt.before(requestedAt)) {
             throw new IllegalArgumentException(
-                "shareEnd must be after shareStart"
+                    "expiresAt must be >= requestedAt"
             );
         }
 
-        // sharedBy ≠ sharedWith
-        if (sharedBy != null && sharedWith != null &&
-            sharedBy.getId().equals(sharedWith.getId())) {
-            throw new IllegalArgumentException(
-                "sharedBy and sharedWith cannot be the same guest"
-            );
+        if (status == null) {
+            status = "PENDING";
         }
     }
 
-    // Required by JPA
-    public KeyShareRequest() {}
+    /* ======================
+       CONSTRUCTOR
+       ====================== */
+    public KeyShareRequest() {
+    }
 
-    // getters & setters
-    public Long getId() { return id; }
+    /* ======================
+       GETTERS & SETTERS
+       ====================== */
 
-    public DigitalKey getDigitalKey() { return digitalKey; }
-    public void setDigitalKey(DigitalKey digitalKey) { this.digitalKey = digitalKey; }
+    public Long getId() {
+        return id;
+    }
 
-    public Guest getSharedBy() { return sharedBy; }
-    public void setSharedBy(Guest sharedBy) { this.sharedBy = sharedBy; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Guest getSharedWith() { return sharedWith; }
-    public void setSharedWith(Guest sharedWith) { this.sharedWith = sharedWith; }
+    public DigitalKey getDigitalKey() {
+        return digitalKey;
+    }
 
-    public Timestamp getShareStart() { return shareStart; }
-    public void setShareStart(Timestamp shareStart) { this.shareStart = shareStart; }
+    public void setDigitalKey(DigitalKey digitalKey) {
+        this.digitalKey = digitalKey;
+    }
 
-    public Timestamp getShareEnd() { return shareEnd; }
-    public void setShareEnd(Timestamp shareEnd) { this.shareEnd = shareEnd; }
+    public Guest getSharedBy() {
+        return sharedBy;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setSharedBy(Guest sharedBy) {
+        this.sharedBy = sharedBy;
+    }
 
-    public Timestamp getCreatedAt() { return createdAt; }
+    public Guest getSharedWith() {
+        return sharedWith;
+    }
+
+    public void setSharedWith(Guest sharedWith) {
+        this.sharedWith = sharedWith;
+    }
+
+    public Timestamp getRequestedAt() {
+        return requestedAt;
+    }
+
+    public void setRequestedAt(Timestamp requestedAt) {
+        this.requestedAt = requestedAt;
+    }
+
+    public Timestamp getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Timestamp expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

@@ -11,7 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-
 @Entity
 public class DigitalKey {
 
@@ -19,7 +18,6 @@ public class DigitalKey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Many keys → One booking
     @ManyToOne
     @JoinColumn(name = "booking_id", nullable = false)
     private RoomBooking booking;
@@ -28,35 +26,31 @@ public class DigitalKey {
     private String keyValue;
 
     private Timestamp issuedAt;
-
     private Timestamp expiresAt;
-
     private Boolean active;
 
     @PrePersist
-    protected void onCreate() {
-        if (this.active == null) {
-            this.active = true;
-        }
-        if (this.issuedAt == null) {
-            this.issuedAt = new Timestamp(System.currentTimeMillis());
-        }
-    }
-
-    @PrePersist
     @PreUpdate
-    protected void validateDates() {
-        if (issuedAt != null && expiresAt != null &&
-            expiresAt.before(issuedAt)) {
+    protected void beforeSave() {
+
+        if (issuedAt == null) {
+            issuedAt = new Timestamp(System.currentTimeMillis());
+        }
+        if (active == null) {
+            active = true;
+        }
+
+        if (expiresAt != null && expiresAt.before(issuedAt)) {
             throw new IllegalArgumentException(
-                "expiresAt must be >= issuedAt"
+                    "expiresAt must be >= issuedAt"
             );
         }
     }
 
     public DigitalKey() {}
 
-    // getters & setters
+    // ✅ GETTERS & SETTERS (REQUIRED BY SERVICES)
+
     public Long getId() { return id; }
 
     public RoomBooking getBooking() { return booking; }

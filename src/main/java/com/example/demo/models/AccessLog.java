@@ -48,7 +48,7 @@ public class AccessLog {
 
         if (accessTime.after(now)) {
             throw new IllegalArgumentException(
-                "accessTime cannot be in the future"
+                    "accessTime cannot be in the future"
             );
         }
     }

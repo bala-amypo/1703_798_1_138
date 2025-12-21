@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
@@ -35,11 +34,6 @@ public class RoomBooking {
 
     // ✅ Many roommates → Many guests
     @ManyToMany
-    @JoinTable(
-        name = "room_booking_roommates",
-        joinColumns = @JoinColumn(name = "room_booking_id"),
-        inverseJoinColumns = @JoinColumn(name = "guest_id")
-    )
     private Set<Guest> roommates;
 
     // ✅ Default active = true
@@ -48,30 +42,10 @@ public class RoomBooking {
         if (this.active == null) {
             this.active = true;
         }
-
-        // ✅ Date rule enforcement
-        if (checkInDate != null && checkOutDate != null &&
-            !checkInDate.isBefore(checkOutDate)) {
-            throw new IllegalArgumentException(
-                "checkInDate must be before checkOutDate"
-            );
-        }
     }
 
     // ✅ REQUIRED by JPA
     public RoomBooking() {
-    }
-
-    public RoomBooking(Long id, Guest guest, String roomNumber,
-                       LocalDate checkInDate, LocalDate checkOutDate,
-                       Boolean active, Set<Guest> roommates) {
-        this.id = id;
-        this.guest = guest;
-        this.roomNumber = roomNumber;
-        this.checkInDate = checkInDate;
-        this.checkOutDate = checkOutDate;
-        this.active = active;
-        this.roommates = roommates;
     }
 
     // getters & setters
