@@ -2,55 +2,54 @@ package com.example.demo.models;
 
 import java.sql.Timestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
 
 @Entity
+@Table(
+    name = "digital_key",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "booking_id"),
+        @UniqueConstraint(columnNames = "key_value")
+    }
+)
 public class DigitalKey {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "booking_id", nullable = false)
     private RoomBooking booking;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "key_value", nullable = false, unique = true)
     private String keyValue;
 
+    @Column(nullable = false)
     private Timestamp issuedAt;
+
+    @Column(nullable = false)
     private Timestamp expiresAt;
-    private Boolean active;
+
+    @Column(nullable = false)
+    private boolean active;
 
     @PrePersist
-    @PreUpdate
-    protected void beforeSave() {
+    protected void onCreate() {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
 
         if (issuedAt == null) {
-            issuedAt = new Timestamp(System.currentTimeMillis());
-        }
-        if (active == null) {
-            active = true;
+            issuedAt = now;
         }
 
-        if (expiresAt != null && expiresAt.before(issuedAt)) {
-            throw new IllegalArgumentException(
-                    "expiresAt must be >= issuedAt"
-            );
+        if (expiresAt == null) {
+            expiresAt = issuedAt;
         }
+
+        active = true;
     }
 
-    public DigitalKey() {}
-
-    // ✅ GETTERS & SETTERS (REQUIRED BY SERVICES)
+    // Getters & setters
 
     public Long getId() { return id; }
 
@@ -66,6 +65,6 @@ public class DigitalKey {
     public Timestamp getExpiresAt() { return expiresAt; }
     public void setExpiresAt(Timestamp expiresAt) { this.expiresAt = expiresAt; }
 
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
