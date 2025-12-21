@@ -1,16 +1,7 @@
 package com.example.demo.models;
 
 import java.time.LocalDate;
-import java.util.Set;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 
 @Entity
 public class RoomBooking {
@@ -19,39 +10,21 @@ public class RoomBooking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ✅ Many bookings → One guest
-    @ManyToOne
-    @JoinColumn(name = "guest_id", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "guest_id")
     private Guest guest;
 
     private String roomNumber;
 
     private LocalDate checkInDate;
-
     private LocalDate checkOutDate;
 
-    private Boolean active;
+    @Column(nullable = false)
+    private boolean active;   // 🔴 IMPORTANT: primitive boolean
 
-    // ✅ Many roommates → Many guests
-    @ManyToMany
-    private Set<Guest> roommates;
-
-    // ✅ Default active = true
-    @PrePersist
-    protected void onCreate() {
-        if (this.active == null) {
-            this.active = true;
-        }
-    }
-
-    // ✅ REQUIRED by JPA
-    public RoomBooking() {
-    }
-
-    // getters & setters
+    // ===== getters & setters =====
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public Guest getGuest() { return guest; }
     public void setGuest(Guest guest) { this.guest = guest; }
@@ -65,9 +38,7 @@ public class RoomBooking {
     public LocalDate getCheckOutDate() { return checkOutDate; }
     public void setCheckOutDate(LocalDate checkOutDate) { this.checkOutDate = checkOutDate; }
 
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
-
-    public Set<Guest> getRoommates() { return roommates; }
-    public void setRoommates(Set<Guest> roommates) { this.roommates = roommates; }
+    // ✅ Correct boolean getter
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
