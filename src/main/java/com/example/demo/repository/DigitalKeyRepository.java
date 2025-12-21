@@ -11,7 +11,7 @@ import com.example.demo.models.RoomBooking;
 
 public interface DigitalKeyRepository extends JpaRepository<DigitalKey, Long> {
 
-    boolean existsByKeyValue(String keyValue);
+    Optional<DigitalKey> findByBooking(RoomBooking booking);
 
     Optional<DigitalKey> findByBookingAndActiveTrue(RoomBooking booking);
 
