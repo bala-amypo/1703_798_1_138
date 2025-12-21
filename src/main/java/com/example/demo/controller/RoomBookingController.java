@@ -11,6 +11,7 @@ import com.example.demo.service.RoomBookingService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/bookings")
 @Tag(name = "Room Booking API", description = "Operations related to room bookings")

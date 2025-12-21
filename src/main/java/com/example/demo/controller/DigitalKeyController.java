@@ -11,6 +11,7 @@ import com.example.demo.service.DigitalKeyService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/digital-keys")
 @Tag(name = "Digital Key API", description = "Operations related to digital keys")

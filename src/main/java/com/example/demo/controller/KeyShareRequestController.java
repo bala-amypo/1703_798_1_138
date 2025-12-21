@@ -11,6 +11,7 @@ import com.example.demo.service.KeyShareRequestService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/key-share")
 @Tag(name = "Key Share Request API", description = "Operations related to key sharing requests")

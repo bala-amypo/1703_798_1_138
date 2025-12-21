@@ -11,6 +11,7 @@ import com.example.demo.service.AccessLogService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/access-logs")
 @Tag(name = "Access Log API", description = "Operations related to access logs")
