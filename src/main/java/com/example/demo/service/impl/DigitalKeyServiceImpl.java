@@ -38,12 +38,12 @@ public class DigitalKeyServiceImpl implements DigitalKeyService {
         RoomBooking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                            "RoomBooking not found with id: " + bookingId
+                                "RoomBooking not found with id: " + bookingId
                         ));
 
         if (!Boolean.TRUE.equals(booking.getActive())) {
             throw new IllegalStateException(
-                "Cannot generate key for inactive booking"
+                    "Cannot generate key for inactive booking"
             );
         }
 
@@ -63,7 +63,7 @@ public class DigitalKeyServiceImpl implements DigitalKeyService {
         return digitalKeyRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                            "DigitalKey not found with id: " + id
+                                "DigitalKey not found with id: " + id
                         ));
     }
 
@@ -74,14 +74,14 @@ public class DigitalKeyServiceImpl implements DigitalKeyService {
         RoomBooking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                            "RoomBooking not found with id: " + bookingId
+                                "RoomBooking not found with id: " + bookingId
                         ));
 
         return digitalKeyRepository
                 .findByBookingAndActiveTrue(booking)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                            "No active key found for booking id: " + bookingId
+                                "No active key found for booking id: " + bookingId
                         ));
     }
 
@@ -92,7 +92,7 @@ public class DigitalKeyServiceImpl implements DigitalKeyService {
         Guest guest = guestRepository.findById(guestId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                            "Guest not found with id: " + guestId
+                                "Guest not found with id: " + guestId
                         ));
 
         return digitalKeyRepository.findByBooking_Guest(guest);

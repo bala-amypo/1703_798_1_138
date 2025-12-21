@@ -30,8 +30,8 @@ public class RoomBookingServiceImpl implements RoomBookingService {
     public RoomBooking createBooking(RoomBooking booking) {
 
         validateDates(
-            booking.getCheckInDate(),
-            booking.getCheckOutDate()
+                booking.getCheckInDate(),
+                booking.getCheckOutDate()
         );
 
         return bookingRepository.save(booking);
@@ -44,8 +44,8 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         RoomBooking existing = getBookingById(id);
 
         validateDates(
-            booking.getCheckInDate(),
-            booking.getCheckOutDate()
+                booking.getCheckInDate(),
+                booking.getCheckOutDate()
         );
 
         existing.setRoomNumber(booking.getRoomNumber());
@@ -64,7 +64,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         return bookingRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                            "RoomBooking not found with id: " + id
+                                "RoomBooking not found with id: " + id
                         ));
     }
 
@@ -75,7 +75,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         Guest guest = guestRepository.findById(guestId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                            "Guest not found with id: " + guestId
+                                "Guest not found with id: " + guestId
                         ));
 
         return bookingRepository.findByGuest(guest);
@@ -95,13 +95,13 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
         if (checkIn == null || checkOut == null) {
             throw new IllegalArgumentException(
-                "Check-in and Check-out dates must not be null"
+                    "Check-in and Check-out dates must not be null"
             );
         }
 
         if (!checkIn.isBefore(checkOut)) {
             throw new IllegalArgumentException(
-                "checkInDate must be before checkOutDate"
+                    "checkInDate must be before checkOutDate"
             );
         }
     }

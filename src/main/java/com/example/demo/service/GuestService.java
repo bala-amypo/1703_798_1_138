@@ -9,6 +9,7 @@ public interface GuestService {
 
     Guest updateGuest(Long id, Guest guest);
 
+    // ✅ FIXED HERE
     Guest getGuestById(Long id);
 
     List<Guest> getAllGuests();
