@@ -27,15 +27,25 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
     // 1️⃣ Create Booking (validate dates)
     @Override
-    public RoomBooking createBooking(RoomBooking booking) {
+    public RoomBooking createBooking(RoomBooking booking, Long guestId) {
 
         validateDates(
                 booking.getCheckInDate(),
                 booking.getCheckOutDate()
         );
 
+        Guest guest = guestRepository.findById(guestId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Guest not found with id: " + guestId
+                        ));
+
+        booking.setGuest(guest);   // 🔥 THIS FIXES 500
+        booking.setActive(true);
+
         return bookingRepository.save(booking);
     }
+
 
     // 2️⃣ Update Booking
     @Override
