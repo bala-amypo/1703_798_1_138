@@ -1,79 +1,61 @@
-package com.example.demo.controller;
+package com.example.demo.models;
 
+import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.persistence.*;
 
-import com.example.demo.models.RoomBooking;
-import com.example.demo.service.RoomBookingService;
+@Entity
+@Table(name = "room_booking")
+public class RoomBooking {
 
-import io.swagger.v3.oas.annotations.tags.Tag;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-@CrossOrigin(origins = "*")
-@RestController
-@RequestMapping("/api/bookings")
-@Tag(name = "Room Booking API", description = "Operations related to room bookings")
-public class RoomBookingController {
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "guest_id")
+    private Guest guest;
 
-    private final RoomBookingService roomBookingService;
+    @Column(name = "room_number")
+    private String roomNumber;
 
-    public RoomBookingController(RoomBookingService roomBookingService) {
-        this.roomBookingService = roomBookingService;
-    }
+    @Column(name = "check_in_date")
+    private LocalDate checkInDate;
 
-    // 1️⃣ Create booking
-    // POST /api/bookings?guestId=1
-    @PostMapping
-    public ResponseEntity<RoomBooking> createBooking(
-            @RequestParam Long guestId,
-            @RequestBody RoomBooking booking) {
+    @Column(name = "check_out_date")
+    private LocalDate checkOutDate;
 
-        RoomBooking createdBooking =
-                roomBookingService.createBooking(booking, guestId);
+    @Column(nullable = false)
+    private boolean active;
 
-        return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
-    }
+    @ManyToMany
+    @JoinTable(
+        name = "room_booking_roommates",
+        joinColumns = @JoinColumn(name = "room_booking_id"),
+        inverseJoinColumns = @JoinColumn(name = "roommates_id")
+    )
+    private List<Guest> roommates;
 
-    // 2️⃣ Update booking (dates / room only)
-    @PutMapping("/{id}")
-    public ResponseEntity<RoomBooking> updateBooking(
-            @PathVariable Long id,
-            @RequestBody RoomBooking booking) {
+    // ===== Getters & Setters =====
 
-        RoomBooking updatedBooking =
-                roomBookingService.updateBooking(id, booking);
+    public Long getId() { return id; }
 
-        return ResponseEntity.ok(updatedBooking);
-    }
+    public Guest getGuest() { return guest; }
+    public void setGuest(Guest guest) { this.guest = guest; }
 
-    // 3️⃣ Get booking by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<RoomBooking> getBookingById(
-            @PathVariable Long id) {
+    public String getRoomNumber() { return roomNumber; }
+    public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
 
-        return ResponseEntity.ok(
-                roomBookingService.getBookingById(id)
-        );
-    }
+    public LocalDate getCheckInDate() { return checkInDate; }
+    public void setCheckInDate(LocalDate checkInDate) { this.checkInDate = checkInDate; }
 
-    // 4️⃣ Get all bookings for a guest
-    @GetMapping("/guest/{guestId}")
-    public ResponseEntity<List<RoomBooking>> getBookingsForGuest(
-            @PathVariable Long guestId) {
+    public LocalDate getCheckOutDate() { return checkOutDate; }
+    public void setCheckOutDate(LocalDate checkOutDate) { this.checkOutDate = checkOutDate; }
 
-        return ResponseEntity.ok(
-                roomBookingService.getBookingsForGuest(guestId)
-        );
-    }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 
-    // 5️⃣ Deactivate booking
-    @PutMapping("/{id}/deactivate")
-    public ResponseEntity<String> deactivateBooking(
-            @PathVariable Long id) {
-
-        roomBookingService.deactivateBooking(id);
-        return ResponseEntity.ok("Booking deactivated successfully");
-    }
+    public List<Guest> getRoommates() { return roommates; }
+    public void setRoommates(List<Guest> roommates) { this.roommates = roommates; }
 }
