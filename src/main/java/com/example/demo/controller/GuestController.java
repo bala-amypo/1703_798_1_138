@@ -32,7 +32,7 @@ public class GuestController {
     }
 
     // 2️⃣ PUT /api/guests/{id} → Update guest
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/active")
     public ResponseEntity<Guest> updateGuest(
             @PathVariable Long id,
             @RequestBody Guest guest) {
