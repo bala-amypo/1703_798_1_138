@@ -18,14 +18,13 @@ public class RoomBookingServiceImpl implements RoomBookingService {
     private final RoomBookingRepository bookingRepository;
     private final GuestRepository guestRepository;
 
-    // Constructor Injection
     public RoomBookingServiceImpl(RoomBookingRepository bookingRepository,
                                   GuestRepository guestRepository) {
         this.bookingRepository = bookingRepository;
         this.guestRepository = guestRepository;
     }
 
-    // 1️⃣ Create Booking (validate dates)
+    // 1️⃣ Create Booking
     @Override
     public RoomBooking createBooking(RoomBooking booking, Long guestId) {
 
@@ -40,14 +39,13 @@ public class RoomBookingServiceImpl implements RoomBookingService {
                                 "Guest not found with id: " + guestId
                         ));
 
-        booking.setGuest(guest);   // 🔥 THIS FIXES 500
+        booking.setGuest(guest);   // 🔥 fixes 500 error
         booking.setActive(true);
 
         return bookingRepository.save(booking);
     }
 
-
-    // 2️⃣ Update Booking
+    // 2️⃣ Update Booking (DO NOT change guest)
     @Override
     public RoomBooking updateBooking(Long id, RoomBooking booking) {
 
@@ -61,7 +59,6 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         existing.setRoomNumber(booking.getRoomNumber());
         existing.setCheckInDate(booking.getCheckInDate());
         existing.setCheckOutDate(booking.getCheckOutDate());
-        existing.setGuest(booking.getGuest());
         existing.setRoommates(booking.getRoommates());
 
         return bookingRepository.save(existing);
@@ -78,7 +75,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
                         ));
     }
 
-    // 4️⃣ Get all bookings for a Guest
+    // 4️⃣ Get bookings for a guest
     @Override
     public List<RoomBooking> getBookingsForGuest(Long guestId) {
 
@@ -91,7 +88,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         return bookingRepository.findByGuest(guest);
     }
 
-    // 5️⃣ Deactivate Booking
+    // 5️⃣ Deactivate booking
     @Override
     public void deactivateBooking(Long id) {
 
@@ -100,7 +97,7 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         bookingRepository.save(booking);
     }
 
-    // 🔒 Date validation logic
+    // 🔒 Date validation
     private void validateDates(LocalDate checkIn, LocalDate checkOut) {
 
         if (checkIn == null || checkOut == null) {

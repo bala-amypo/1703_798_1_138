@@ -1,63 +1,79 @@
-package com.example.demo.models;
+package com.example.demo.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.persistence.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Entity
-@Table(name = "room_booking")
-public class RoomBooking {
+import com.example.demo.models.RoomBooking;
+import com.example.demo.service.RoomBookingService;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "guest_id")
-    private Guest guest;
+@CrossOrigin(origins = "*")
+@RestController
+@RequestMapping("/api/bookings")
+@Tag(name = "Room Booking API", description = "Operations related to room bookings")
+public class RoomBookingController {
 
-    @Column(name = "room_number")
-    private String roomNumber;
+    private final RoomBookingService roomBookingService;
 
-    @Column(name = "check_in_date")
-    private LocalDate checkInDate;
+    public RoomBookingController(RoomBookingService roomBookingService) {
+        this.roomBookingService = roomBookingService;
+    }
 
-    @Column(name = "check_out_date")
-    private LocalDate checkOutDate;
+    // 1️⃣ Create booking
+    // POST /api/bookings?guestId=1
+    @PostMapping
+    public ResponseEntity<RoomBooking> createBooking(
+            @RequestParam Long guestId,
+            @RequestBody RoomBooking booking) {
 
-    @Column(nullable = false)
-    private boolean active;
+        RoomBooking createdBooking =
+                roomBookingService.createBooking(booking, guestId);
 
-    // 🔴 THIS IS WHAT WAS MISSING
-    @ManyToMany
-    @JoinTable(
-        name = "room_booking_roommates",
-        joinColumns = @JoinColumn(name = "room_booking_id"),
-        inverseJoinColumns = @JoinColumn(name = "roommates_id")
-    )
-    private List<Guest> roommates;
+        return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
+    }
 
-    // ===== getters & setters =====
+    // 2️⃣ Update booking (dates / room only)
+    @PutMapping("/{id}")
+    public ResponseEntity<RoomBooking> updateBooking(
+            @PathVariable Long id,
+            @RequestBody RoomBooking booking) {
 
-    public Long getId() { return id; }
+        RoomBooking updatedBooking =
+                roomBookingService.updateBooking(id, booking);
 
-    public Guest getGuest() { return guest; }
-    public void setGuest(Guest guest) { this.guest = guest; }
+        return ResponseEntity.ok(updatedBooking);
+    }
 
-    public String getRoomNumber() { return roomNumber; }
-    public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
+    // 3️⃣ Get booking by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<RoomBooking> getBookingById(
+            @PathVariable Long id) {
 
-    public LocalDate getCheckInDate() { return checkInDate; }
-    public void setCheckInDate(LocalDate checkInDate) { this.checkInDate = checkInDate; }
+        return ResponseEntity.ok(
+                roomBookingService.getBookingById(id)
+        );
+    }
 
-    public LocalDate getCheckOutDate() { return checkOutDate; }
-    public void setCheckOutDate(LocalDate checkOutDate) { this.checkOutDate = checkOutDate; }
+    // 4️⃣ Get all bookings for a guest
+    @GetMapping("/guest/{guestId}")
+    public ResponseEntity<List<RoomBooking>> getBookingsForGuest(
+            @PathVariable Long guestId) {
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+        return ResponseEntity.ok(
+                roomBookingService.getBookingsForGuest(guestId)
+        );
+    }
 
-    // ✅ THIS FIXES YOUR ERROR
-    public List<Guest> getRoommates() { return roommates; }
-    public void setRoommates(List<Guest> roommates) { this.roommates = roommates; }
+    // 5️⃣ Deactivate booking
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<String> deactivateBooking(
+            @PathVariable Long id) {
+
+        roomBookingService.deactivateBooking(id);
+        return ResponseEntity.ok("Booking deactivated successfully");
+    }
 }
