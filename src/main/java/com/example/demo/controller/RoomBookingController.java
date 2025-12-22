@@ -27,13 +27,15 @@ public class RoomBookingController {
     // 1️⃣ POST /api/bookings → Create booking
     @PostMapping
     public ResponseEntity<RoomBooking> createBooking(
+            @RequestParam Long guestId,
             @RequestBody RoomBooking booking) {
 
         RoomBooking createdBooking =
-                roomBookingService.createBooking(booking);
+                roomBookingService.createBooking(booking, guestId);
 
         return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
     }
+
 
     // 2️⃣ PUT /api/bookings/{id} → Update booking
     @PutMapping("/{id}")
