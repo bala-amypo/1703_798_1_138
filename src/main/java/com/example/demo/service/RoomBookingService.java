@@ -6,7 +6,7 @@ import com.example.demo.models.RoomBooking;
 
 public interface RoomBookingService {
 
-    RoomBooking createBooking(RoomBooking booking);
+    RoomBooking createBooking(RoomBooking booking, Long guestId);
 
     RoomBooking updateBooking(Long id, RoomBooking booking);
 
@@ -16,3 +16,4 @@ public interface RoomBookingService {
 
     void deactivateBooking(Long id);
 }
+
