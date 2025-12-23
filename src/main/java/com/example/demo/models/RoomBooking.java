@@ -3,10 +3,12 @@ package com.example.demo.models;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "room_booking")
+@JsonIgnoreProperties({"guest", "roommates"})
 public class RoomBooking {
 
     @Id
@@ -27,7 +29,7 @@ public class RoomBooking {
     private LocalDate checkOutDate;
 
     @Column(nullable = false)
-    private boolean active;
+    private boolean active = true;
 
     @ManyToMany
     @JoinTable(
@@ -36,8 +38,6 @@ public class RoomBooking {
         inverseJoinColumns = @JoinColumn(name = "roommates_id")
     )
     private List<Guest> roommates;
-
-    // ===== Getters & Setters =====
 
     public Long getId() { return id; }
 

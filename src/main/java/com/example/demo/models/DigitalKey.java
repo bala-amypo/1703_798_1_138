@@ -2,6 +2,7 @@ package com.example.demo.models;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,6 +13,7 @@ import jakarta.persistence.*;
         @UniqueConstraint(columnNames = "key_value")
     }
 )
+@JsonIgnoreProperties({"booking"})
 public class DigitalKey {
 
     @Id
@@ -33,21 +35,6 @@ public class DigitalKey {
 
     @Column(nullable = false)
     private boolean active;
-
-    @PrePersist
-    protected void onCreate() {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-
-        if (issuedAt == null) {
-            issuedAt = now;
-        }
-
-        if (expiresAt == null) {
-            expiresAt = issuedAt;
-        }
-
-        active = true;
-    }
 
     // Getters & setters
 
