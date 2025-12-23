@@ -40,26 +40,29 @@ public class DigitalKeyServiceImpl implements DigitalKeyService {
                                 "RoomBooking not found with id: " + bookingId));
 
         if (!booking.isActive()) {
-            throw new IllegalStateException(
-                    "Cannot generate digital key for inactive booking");
+            throw new IllegalStateException("Booking is inactive");
         }
 
-        // ❌ Prevent duplicates
+        // Prevent duplicate key
         digitalKeyRepository.findByBooking(booking)
                 .ifPresent(k -> {
                     throw new IllegalStateException(
                             "Digital key already exists for this booking");
                 });
 
+        Timestamp issuedAt = new Timestamp(System.currentTimeMillis());
+        Timestamp expiresAt =
+                Timestamp.valueOf(
+                        booking.getCheckOutDate()
+                                .plusDays(1)
+                                .atStartOfDay()
+                );
+
         DigitalKey key = new DigitalKey();
         key.setBooking(booking);
         key.setKeyValue(UUID.randomUUID().toString());
-        key.setIssuedAt(new Timestamp(System.currentTimeMillis()));
-        key.setExpiresAt(
-                Timestamp.valueOf(
-                        booking.getCheckOutDate().atStartOfDay()
-                )
-        );
+        key.setIssuedAt(issuedAt);
+        key.setExpiresAt(expiresAt);
         key.setActive(true);
 
         return digitalKeyRepository.save(key);
@@ -85,7 +88,7 @@ public class DigitalKeyServiceImpl implements DigitalKeyService {
                 .findByBookingAndActiveTrue(booking)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "No active digital key found for booking id: " + bookingId));
+                                "No active digital key for booking id: " + bookingId));
     }
 
     @Override
