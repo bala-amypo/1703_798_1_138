@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.models.Guest;
-import com.example.demo.models.RoomBooking;
+import com.example.demo.model.Guest;
+import com.example.demo.model.RoomBooking;
 
 public interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> {
 

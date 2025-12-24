@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.models.KeyShareRequest;
+import com.example.demo.model.KeyShareRequest;
 import com.example.demo.service.KeyShareRequestService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

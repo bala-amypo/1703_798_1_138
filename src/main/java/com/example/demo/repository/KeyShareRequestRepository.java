@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.models.Guest;
-import com.example.demo.models.KeyShareRequest;
+import com.example.demo.model.Guest;
+import com.example.demo.model.KeyShareRequest;
 
 public interface KeyShareRequestRepository
         extends JpaRepository<KeyShareRequest, Long> {

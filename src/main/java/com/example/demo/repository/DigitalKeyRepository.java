@@ -5,9 +5,9 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.models.DigitalKey;
-import com.example.demo.models.Guest;
-import com.example.demo.models.RoomBooking;
+import com.example.demo.model.DigitalKey;
+import com.example.demo.model.Guest;
+import com.example.demo.model.RoomBooking;
 
 public interface DigitalKeyRepository extends JpaRepository<DigitalKey, Long> {
 
