@@ -26,33 +26,25 @@
 
     <dependencies>
 
-        <!-- ========================= -->
-        <!-- Spring Web / REST -->
-        <!-- ========================= -->
+        <!-- Spring Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- ========================= -->
-        <!-- JPA / Hibernate -->
-        <!-- ========================= -->
+        <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- ========================= -->
         <!-- Spring Security -->
-        <!-- ========================= -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- ========================= -->
-        <!-- JWT (JJWT) -->
-        <!-- ========================= -->
+        <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -73,42 +65,42 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- ========================= -->
-        <!-- Swagger / OpenAPI -->
-        <!-- ========================= -->
+        <!-- Swagger -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.3.0</version>
         </dependency>
 
-        <!-- ========================= -->
-        <!-- MySQL Driver -->
-        <!-- ========================= -->
+        <!-- MySQL -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- ========================= -->
-        <!-- Spring Boot Testing (without JUnit Vintage) -->
-        <!-- ========================= -->
+        <!-- Spring Boot Test (JUnit COMPLETELY EXCLUDED) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.junit.vintage</groupId>
                     <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-launcher</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
 
-        <!-- ========================= -->
-        <!-- TestNG (MANDATORY) -->
-        <!-- ========================= -->
+        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -127,20 +119,24 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- ========================= -->
-            <!-- Maven Surefire (FORCE TESTNG) -->
-            <!-- ========================= -->
+            <!-- Maven Surefire - FORCE TESTNG -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
                     <useModulePath>false</useModulePath>
+
+                    <providers>
+                        <provider>
+                            <name>testng</name>
+                        </provider>
+                    </providers>
+
                     <includes>
-                        <include>**/*Test*.java</include>
+                        <include>**/*Test.java</include>
                         <include>**/*Tests.java</include>
                     </includes>
-                    <testNGArtifactName>org.testng:testng</testNGArtifactName>
                 </configuration>
             </plugin>
 
