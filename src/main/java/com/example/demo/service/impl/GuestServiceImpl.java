@@ -1,14 +1,13 @@
 package com.example.demo.service.impl;
 
-import java.util.List;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Guest;
 import com.example.demo.repository.GuestRepository;
 import com.example.demo.service.GuestService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class GuestServiceImpl implements GuestService {
@@ -24,34 +23,37 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public Guest createGuest(Guest guest) {
+
         if (guestRepository.existsByEmail(guest.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
 
         guest.setPassword(passwordEncoder.encode(guest.getPassword()));
-        guest.setActive(true);
-
         return guestRepository.save(guest);
     }
 
     @Override
-    public Guest updateGuest(Long id, Guest guest) {
-        Guest existing = getGuestById(id);
+    public Guest updateGuest(Long id, Guest updated) {
 
-        existing.setFullName(guest.getFullName());
-        existing.setPhoneNumber(guest.getPhoneNumber());
-        existing.setVerified(guest.getVerified());
-        existing.setRole(guest.getRole());
-        existing.setActive(guest.getActive());
+        Guest existing = guestRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Guest not found: " + id));
+
+        existing.setFullName(updated.getFullName());
+        existing.setPhoneNumber(updated.getPhoneNumber());
+        existing.setVerified(updated.getVerified());
+        existing.setActive(updated.getActive());
+        existing.setRole(updated.getRole());
 
         return guestRepository.save(existing);
     }
 
     @Override
     public Guest getGuestById(Long id) {
+
         return guestRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Guest not found"));
+                        new ResourceNotFoundException("Guest not found: " + id));
     }
 
     @Override
@@ -61,7 +63,11 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public void deactivateGuest(Long id) {
-        Guest guest = getGuestById(id);
+
+        Guest guest = guestRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Guest not found: " + id));
+
         guest.setActive(false);
         guestRepository.save(guest);
     }
