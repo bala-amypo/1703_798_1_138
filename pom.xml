@@ -27,7 +27,7 @@
     <dependencies>
 
         <!-- ========================= -->
-        <!-- Web / REST -->
+        <!-- Spring Web / REST -->
         <!-- ========================= -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -92,7 +92,7 @@
         </dependency>
 
         <!-- ========================= -->
-        <!-- Testing -->
+        <!-- Spring Boot Testing (without JUnit Vintage) -->
         <!-- ========================= -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -107,7 +107,7 @@
         </dependency>
 
         <!-- ========================= -->
-        <!-- TestNG (REQUIRED) -->
+        <!-- TestNG (MANDATORY) -->
         <!-- ========================= -->
         <dependency>
             <groupId>org.testng</groupId>
@@ -120,10 +120,30 @@
 
     <build>
         <plugins>
+
+            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <!-- ========================= -->
+            <!-- Maven Surefire (FORCE TESTNG) -->
+            <!-- ========================= -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <includes>
+                        <include>**/*Test*.java</include>
+                        <include>**/*Tests.java</include>
+                    </includes>
+                    <testNGArtifactName>org.testng:testng</testNGArtifactName>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
