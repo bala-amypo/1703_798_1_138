@@ -1,59 +1,57 @@
 package com.example.demo.security;
 
-import com.example.demo.model.Guest;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.util.Base64;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.security.Key;
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    // simple in-memory token store
-    private final Map<String, Guest> tokenStore = new ConcurrentHashMap<>();
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String generateToken(Authentication authentication) {
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
-        Object principal = authentication.getPrincipal();
-        if (!(principal instanceof org.springframework.security.core.userdetails.User user)) {
-            return null;
-        }
-
-        Guest guest = new Guest();
-        guest.setEmail(user.getUsername());
-
-        // extract role
-        user.getAuthorities().stream()
-                .findFirst()
-                .ifPresent(a -> guest.setRole(a.getAuthority()));
-
-        // generate fake token
-        String rawToken = UUID.randomUUID().toString();
-        String token = Base64.getEncoder().encodeToString(rawToken.getBytes());
-
-        tokenStore.put(token, guest);
-        return token;
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .claim("userId", user.getId())
+                .claim("role", user.getRole())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .signWith(key)
+                .compact();
     }
 
     public boolean validateToken(String token) {
-        return tokenStore.containsKey(token);
-    }
-
-    public String getEmailFromToken(String token) {
-        Guest guest = tokenStore.get(token);
-        return guest != null ? guest.getEmail() : null;
-    }
-
-    public String getRoleFromToken(String token) {
-        Guest guest = tokenStore.get(token);
-        return guest != null ? guest.getRole() : null;
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     public Long getUserIdFromToken(String token) {
-        // Tests only check NOT NULL, not exact value
-        return tokenStore.containsKey(token) ? 1L : null;
+        return getClaims(token).get("userId", Long.class);
+    }
+
+    public String getEmailFromToken(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    public String getRoleFromToken(String token) {
+        return getClaims(token).get("role", String.class);
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
