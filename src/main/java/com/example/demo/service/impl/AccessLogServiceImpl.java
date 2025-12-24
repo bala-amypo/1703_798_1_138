@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.models.AccessLog;
-import com.example.demo.models.DigitalKey;
-import com.example.demo.models.Guest;
+import com.example.demo.model.AccessLog;
+import com.example.demo.model.DigitalKey;
+import com.example.demo.model.Guest;
 import com.example.demo.repository.AccessLogRepository;
 import com.example.demo.repository.DigitalKeyRepository;
 import com.example.demo.repository.GuestRepository;
