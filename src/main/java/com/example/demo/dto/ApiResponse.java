@@ -1,9 +1,13 @@
 package com.example.demo.dto;
 
 public class ApiResponse {
+
     private boolean success;
     private String message;
     private Object data;
+
+    public ApiResponse() {
+    }
 
     public ApiResponse(boolean success, String message) {
         this.success = success;
@@ -16,7 +20,27 @@ public class ApiResponse {
         this.data = data;
     }
 
-    public boolean isSuccess() { return success; }
-    public String getMessage() { return message; }
-    public Object getData() { return data; }
+    public boolean isSuccess() {
+        return success;
+    }
+    
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+    
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Object getData() {
+        return data;
+    }
+    
+    public void setData(Object data) {
+        this.data = data;
+    }
 }
