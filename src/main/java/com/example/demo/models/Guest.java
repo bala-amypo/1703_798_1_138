@@ -40,7 +40,6 @@ public class Guest {
         }
     }
 
-    // ✅ REQUIRED by JPA
     public Guest() {
     }
 
