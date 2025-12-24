@@ -2,12 +2,7 @@ package com.example.demo.model;
 
 import java.sql.Timestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 
 @Entity
 public class Guest {
@@ -21,6 +16,9 @@ public class Guest {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private String password;   // ✅ ADDED
+
     private String phoneNumber;
 
     private Boolean verified;
@@ -31,7 +29,6 @@ public class Guest {
 
     private Timestamp createdAt;
 
-    // ✅ Auto-set defaults before insert
     @PrePersist
     protected void onCreate() {
         this.createdAt = new Timestamp(System.currentTimeMillis());
@@ -40,14 +37,15 @@ public class Guest {
         }
     }
 
-    public Guest() {
-    }
+    public Guest() {}
 
-    public Guest(Long id, String fullName, String email, String phoneNumber,
-                 Boolean verified, Boolean active, String role, Timestamp createdAt) {
+    public Guest(Long id, String fullName, String email, String password,
+                 String phoneNumber, Boolean verified, Boolean active,
+                 String role, Timestamp createdAt) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
+        this.password = password;
         this.phoneNumber = phoneNumber;
         this.verified = verified;
         this.active = active;
@@ -65,6 +63,9 @@ public class Guest {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
