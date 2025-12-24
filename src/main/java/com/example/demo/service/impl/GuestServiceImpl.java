@@ -16,7 +16,6 @@ public class GuestServiceImpl implements GuestService {
     private final GuestRepository guestRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // ✅ MUST match test constructor
     public GuestServiceImpl(GuestRepository guestRepository,
                             PasswordEncoder passwordEncoder) {
         this.guestRepository = guestRepository;
@@ -26,7 +25,7 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public Guest createGuest(Guest guest) {
         if (guestRepository.existsByEmail(guest.getEmail())) {
-            throw new IllegalArgumentException("Email already");
+            throw new IllegalArgumentException("Email already exists");
         }
 
         guest.setPassword(passwordEncoder.encode(guest.getPassword()));

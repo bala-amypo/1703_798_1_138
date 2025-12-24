@@ -14,16 +14,17 @@ public class RoomBookingServiceImpl implements RoomBookingService {
 
     private final RoomBookingRepository roomBookingRepository;
 
-    // ✅ MUST match test constructor
     public RoomBookingServiceImpl(RoomBookingRepository roomBookingRepository) {
         this.roomBookingRepository = roomBookingRepository;
     }
 
     @Override
-    public RoomBooking createBooking(RoomBooking booking) {
+    public RoomBooking createBooking(RoomBooking booking, Long guestId) {
 
         if (!booking.getCheckInDate().isBefore(booking.getCheckOutDate())) {
-            throw new IllegalArgumentException("Check-in");
+            throw new IllegalArgumentException(
+                "Check-in date must be before check-out date"
+            );
         }
 
         booking.setActive(true);
@@ -36,7 +37,9 @@ public class RoomBookingServiceImpl implements RoomBookingService {
         RoomBooking existing = getBookingById(id);
 
         if (!booking.getCheckInDate().isBefore(booking.getCheckOutDate())) {
-            throw new IllegalArgumentException("Check-in");
+            throw new IllegalArgumentException(
+                "Check-in date must be before check-out date"
+            );
         }
 
         existing.setRoomNumber(booking.getRoomNumber());
