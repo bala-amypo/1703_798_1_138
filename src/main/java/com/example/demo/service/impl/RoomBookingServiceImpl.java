@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.models.Guest;
-import com.example.demo.models.RoomBooking;
+import com.example.demo.model.Guest;
+import com.example.demo.model.RoomBooking;
 import com.example.demo.repository.GuestRepository;
 import com.example.demo.repository.RoomBookingRepository;
 import com.example.demo.service.RoomBookingService;

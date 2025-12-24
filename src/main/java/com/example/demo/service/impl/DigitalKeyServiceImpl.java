@@ -7,9 +7,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.models.DigitalKey;
-import com.example.demo.models.Guest;
-import com.example.demo.models.RoomBooking;
+import com.example.demo.model.DigitalKey;
+import com.example.demo.model.Guest;
+import com.example.demo.model.RoomBooking;
 import com.example.demo.repository.DigitalKeyRepository;
 import com.example.demo.repository.GuestRepository;
 import com.example.demo.repository.RoomBookingRepository;
