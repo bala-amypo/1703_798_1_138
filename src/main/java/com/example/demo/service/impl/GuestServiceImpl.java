@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.ResourceNotFoundException;
@@ -13,57 +14,54 @@ import com.example.demo.service.GuestService;
 public class GuestServiceImpl implements GuestService {
 
     private final GuestRepository guestRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    // Constructor Injection (BEST PRACTICE)
-    public GuestServiceImpl(GuestRepository guestRepository) {
+    // ✅ MUST match test constructor
+    public GuestServiceImpl(GuestRepository guestRepository,
+                            PasswordEncoder passwordEncoder) {
         this.guestRepository = guestRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // 1️⃣ Create Guest (check duplicate email)
     @Override
     public Guest createGuest(Guest guest) {
-
         if (guestRepository.existsByEmail(guest.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new IllegalArgumentException("Email already");
         }
+
+        guest.setPassword(passwordEncoder.encode(guest.getPassword()));
+        guest.setActive(true);
 
         return guestRepository.save(guest);
     }
 
-    // 2️⃣ Update Guest
     @Override
     public Guest updateGuest(Long id, Guest guest) {
+        Guest existing = getGuestById(id);
 
-        Guest existingGuest = getGuestById(id);
+        existing.setFullName(guest.getFullName());
+        existing.setPhoneNumber(guest.getPhoneNumber());
+        existing.setVerified(guest.getVerified());
+        existing.setRole(guest.getRole());
+        existing.setActive(guest.getActive());
 
-        existingGuest.setFullName(guest.getFullName());
-        existingGuest.setEmail(guest.getEmail());
-        existingGuest.setPhoneNumber(guest.getPhoneNumber());
-        existingGuest.setVerified(guest.getVerified());
-        existingGuest.setRole(guest.getRole());
-
-        return guestRepository.save(existingGuest);
+        return guestRepository.save(existing);
     }
 
-    // 3️⃣ Get Guest by ID
     @Override
     public Guest getGuestById(Long id) {
-
         return guestRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Guest not found with id: " + id));
+                        new ResourceNotFoundException("Guest not found"));
     }
 
-    // 4️⃣ Get all Guests
     @Override
     public List<Guest> getAllGuests() {
         return guestRepository.findAll();
     }
 
-    // 5️⃣ Deactivate Guest
     @Override
     public void deactivateGuest(Long id) {
-
         Guest guest = getGuestById(id);
         guest.setActive(false);
         guestRepository.save(guest);
