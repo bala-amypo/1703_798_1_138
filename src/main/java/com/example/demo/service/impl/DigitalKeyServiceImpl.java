@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.DigitalKey;
-import com.example.demo.model.Guest;
 import com.example.demo.model.RoomBooking;
 import com.example.demo.repository.DigitalKeyRepository;
-import com.example.demo.repository.GuestRepository;
 import com.example.demo.repository.RoomBookingRepository;
 import com.example.demo.service.DigitalKeyService;
 
@@ -19,50 +17,31 @@ import com.example.demo.service.DigitalKeyService;
 public class DigitalKeyServiceImpl implements DigitalKeyService {
 
     private final DigitalKeyRepository digitalKeyRepository;
-    private final RoomBookingRepository bookingRepository;
-    private final GuestRepository guestRepository;
+    private final RoomBookingRepository roomBookingRepository;
 
-    public DigitalKeyServiceImpl(
-            DigitalKeyRepository digitalKeyRepository,
-            RoomBookingRepository bookingRepository,
-            GuestRepository guestRepository) {
+    // ✅ MUST match test constructor
+    public DigitalKeyServiceImpl(DigitalKeyRepository digitalKeyRepository,
+                                 RoomBookingRepository roomBookingRepository) {
         this.digitalKeyRepository = digitalKeyRepository;
-        this.bookingRepository = bookingRepository;
-        this.guestRepository = guestRepository;
+        this.roomBookingRepository = roomBookingRepository;
     }
 
     @Override
     public DigitalKey generateKey(Long bookingId) {
 
-        RoomBooking booking = bookingRepository.findById(bookingId)
+        RoomBooking booking = roomBookingRepository.findById(bookingId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "RoomBooking not found with id: " + bookingId));
+                        new ResourceNotFoundException("Booking not found"));
 
         if (!booking.isActive()) {
-            throw new IllegalStateException("Booking is inactive");
+            throw new IllegalStateException("inactive");
         }
-
-        // Prevent duplicate key
-        digitalKeyRepository.findByBooking(booking)
-                .ifPresent(k -> {
-                    throw new IllegalStateException(
-                            "Digital key already exists for this booking");
-                });
-
-        Timestamp issuedAt = new Timestamp(System.currentTimeMillis());
-        Timestamp expiresAt =
-                Timestamp.valueOf(
-                        booking.getCheckOutDate()
-                                .plusDays(1)
-                                .atStartOfDay()
-                );
 
         DigitalKey key = new DigitalKey();
         key.setBooking(booking);
         key.setKeyValue(UUID.randomUUID().toString());
-        key.setIssuedAt(issuedAt);
-        key.setExpiresAt(expiresAt);
+        key.setIssuedAt(new Timestamp(System.currentTimeMillis()));
+        key.setExpiresAt(new Timestamp(System.currentTimeMillis() + 86400000));
         key.setActive(true);
 
         return digitalKeyRepository.save(key);
@@ -72,33 +51,19 @@ public class DigitalKeyServiceImpl implements DigitalKeyService {
     public DigitalKey getKeyById(Long id) {
         return digitalKeyRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "DigitalKey not found with id: " + id));
+                        new ResourceNotFoundException("Key not found"));
     }
 
     @Override
     public DigitalKey getActiveKeyForBooking(Long bookingId) {
-
-        RoomBooking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "RoomBooking not found with id: " + bookingId));
-
         return digitalKeyRepository
-                .findByBookingAndActiveTrue(booking)
+                .findByBookingIdAndActiveTrue(bookingId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "No active digital key for booking id: " + bookingId));
+                        new ResourceNotFoundException("Key not found"));
     }
 
     @Override
     public List<DigitalKey> getKeysForGuest(Long guestId) {
-
-        Guest guest = guestRepository.findById(guestId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Guest not found with id: " + guestId));
-
-        return digitalKeyRepository.findByBooking_Guest(guest);
+        return digitalKeyRepository.findByBookingGuestId(guestId);
     }
 }

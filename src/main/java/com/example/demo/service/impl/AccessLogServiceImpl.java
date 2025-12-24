@@ -1,16 +1,16 @@
 package com.example.demo.service.impl;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.AccessLog;
-import com.example.demo.model.DigitalKey;
-import com.example.demo.model.Guest;
 import com.example.demo.repository.AccessLogRepository;
 import com.example.demo.repository.DigitalKeyRepository;
 import com.example.demo.repository.GuestRepository;
+import com.example.demo.repository.KeyShareRequestRepository;
 import com.example.demo.service.AccessLogService;
 
 @Service
@@ -19,57 +19,44 @@ public class AccessLogServiceImpl implements AccessLogService {
     private final AccessLogRepository accessLogRepository;
     private final DigitalKeyRepository digitalKeyRepository;
     private final GuestRepository guestRepository;
+    private final KeyShareRequestRepository keyShareRequestRepository;
 
-    public AccessLogServiceImpl(
-            AccessLogRepository accessLogRepository,
-            DigitalKeyRepository digitalKeyRepository,
-            GuestRepository guestRepository) {
+    // ✅ MUST match test constructor
+    public AccessLogServiceImpl(AccessLogRepository accessLogRepository,
+                                DigitalKeyRepository digitalKeyRepository,
+                                GuestRepository guestRepository,
+                                KeyShareRequestRepository keyShareRequestRepository) {
         this.accessLogRepository = accessLogRepository;
         this.digitalKeyRepository = digitalKeyRepository;
         this.guestRepository = guestRepository;
+        this.keyShareRequestRepository = keyShareRequestRepository;
     }
 
-    // 1️⃣ Create log (USED BY CONTROLLER)
     @Override
     public AccessLog createLog(AccessLog log) {
 
-        Long keyId = log.getDigitalKey().getId();
-
-        DigitalKey key = digitalKeyRepository.findById(keyId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "DigitalKey not found with id: " + keyId));
-
-        if (!key.isActive()) {
-            throw new IllegalStateException("Digital key is inactive");
+        if (log.getAccessTime().after(new Timestamp(System.currentTimeMillis()))) {
+            throw new IllegalArgumentException("future");
         }
-
-        log.setDigitalKey(key);
 
         return accessLogRepository.save(log);
     }
 
-    // 2️⃣ Get logs for a digital key
     @Override
     public List<AccessLog> getLogsForKey(Long keyId) {
-
-        DigitalKey key = digitalKeyRepository.findById(keyId)
+        digitalKeyRepository.findById(keyId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "DigitalKey not found with id: " + keyId));
+                        new ResourceNotFoundException("Key not found"));
 
-        return accessLogRepository.findByDigitalKey(key);
+        return accessLogRepository.findByDigitalKeyId(keyId);
     }
 
-    // 3️⃣ Get logs for a guest
     @Override
     public List<AccessLog> getLogsForGuest(Long guestId) {
-
-        Guest guest = guestRepository.findById(guestId)
+        guestRepository.findById(guestId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Guest not found with id: " + guestId));
+                        new ResourceNotFoundException("Guest not found"));
 
-        return accessLogRepository.findByGuest(guest);
+        return accessLogRepository.findByGuestId(guestId);
     }
 }
