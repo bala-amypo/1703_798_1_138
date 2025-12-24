@@ -1,87 +1,62 @@
 package com.example.demo.model;
 
-import java.sql.Timestamp;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
+import java.time.Instant;
 
 @Entity
+@Table(name = "access_logs")
 public class AccessLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Many logs → One DigitalKey
     @ManyToOne
-    @JoinColumn(name = "digital_key_id", nullable = false)
     private DigitalKey digitalKey;
 
-    // Many logs → One Guest
     @ManyToOne
-    @JoinColumn(name = "guest_id", nullable = false)
     private Guest guest;
 
-    private Timestamp accessTime;
+    private Instant accessTime;
 
-    // SUCCESS / DENIED
     private String result;
 
     private String reason;
 
-    // Validate accessTime
-    @PrePersist
-    @PreUpdate
-    protected void validateAccessTime() {
-
-        if (accessTime == null) {
-            accessTime = new Timestamp(System.currentTimeMillis());
-        }
-
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-
-        if (accessTime.after(now)) {
-            throw new IllegalArgumentException(
-                    "accessTime cannot be in the future"
-            );
-        }
+    public AccessLog() {
     }
 
-    // Required by JPA
-    public AccessLog() {}
+    public AccessLog(DigitalKey digitalKey, Guest guest,
+                     Instant accessTime, String result,
+                     String reason) {
+        this.digitalKey = digitalKey;
+        this.guest = guest;
+        this.accessTime = accessTime;
+        this.result = result;
+        this.reason = reason;
+    }
 
-    // getters & setters
+    // getters and setters
 
     public Long getId() { return id; }
 
     public DigitalKey getDigitalKey() { return digitalKey; }
-    public void setDigitalKey(DigitalKey digitalKey) {
-        this.digitalKey = digitalKey;
-    }
+
+    public void setDigitalKey(DigitalKey digitalKey) { this.digitalKey = digitalKey; }
 
     public Guest getGuest() { return guest; }
-    public void setGuest(Guest guest) {
-        this.guest = guest;
-    }
 
-    public Timestamp getAccessTime() { return accessTime; }
-    public void setAccessTime(Timestamp accessTime) {
-        this.accessTime = accessTime;
-    }
+    public void setGuest(Guest guest) { this.guest = guest; }
+
+    public Instant getAccessTime() { return accessTime; }
+
+    public void setAccessTime(Instant accessTime) { this.accessTime = accessTime; }
 
     public String getResult() { return result; }
-    public void setResult(String result) {
-        this.result = result;
-    }
+
+    public void setResult(String result) { this.result = result; }
 
     public String getReason() { return reason; }
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
+
+    public void setReason(String reason) { this.reason = reason; }
 }

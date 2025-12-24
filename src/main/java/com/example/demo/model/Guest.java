@@ -1,10 +1,13 @@
 package com.example.demo.model;
 
-import java.sql.Timestamp;
-
 import jakarta.persistence.*;
+import java.time.Instant;
 
 @Entity
+@Table(
+    name = "guests",
+    uniqueConstraints = @UniqueConstraint(columnNames = "email")
+)
 public class Guest {
 
     @Id
@@ -13,72 +16,76 @@ public class Guest {
 
     private String fullName;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false)
-    private String password;   // ✅ ADDED
 
     private String phoneNumber;
 
-    private Boolean verified;
+    @Column(nullable = false)
+    private String password;
 
-    private Boolean active;
+    private Boolean verified = false;
 
-    private String role;
+    private Boolean active = true;
 
-    private Timestamp createdAt;
+    private String role = "ROLE_USER";
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Timestamp(System.currentTimeMillis());
-        if (this.active == null) {
-            this.active = true;
-        }
+    private Instant createdAt;
+
+    public Guest() {
     }
 
-    public Guest() {}
-
-    public Guest(Long id, String fullName, String email, String password,
-                 String phoneNumber, Boolean verified, Boolean active,
-                 String role, Timestamp createdAt) {
-        this.id = id;
+    public Guest(String fullName, String email, String phoneNumber,
+                 String password, Boolean verified, Boolean active,
+                 String role, Instant createdAt) {
         this.fullName = fullName;
         this.email = email;
-        this.password = password;
         this.phoneNumber = phoneNumber;
+        this.password = password;
         this.verified = verified;
         this.active = active;
         this.role = role;
         this.createdAt = createdAt;
     }
 
-    // getters & setters
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = Instant.now();
+    }
+
+    // getters and setters
 
     public Long getId() { return id; }
+
     public void setId(Long id) { this.id = id; }
 
     public String getFullName() { return fullName; }
+
     public void setFullName(String fullName) { this.fullName = fullName; }
 
     public String getEmail() { return email; }
+
     public void setEmail(String email) { this.email = email; }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
     public String getPhoneNumber() { return phoneNumber; }
+
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
+    public String getPassword() { return password; }
+
+    public void setPassword(String password) { this.password = password; }
+
     public Boolean getVerified() { return verified; }
+
     public void setVerified(Boolean verified) { this.verified = verified; }
 
     public Boolean getActive() { return active; }
+
     public void setActive(Boolean active) { this.active = active; }
 
     public String getRole() { return role; }
+
     public void setRole(String role) { this.role = role; }
 
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    public Instant getCreatedAt() { return createdAt; }
 }
