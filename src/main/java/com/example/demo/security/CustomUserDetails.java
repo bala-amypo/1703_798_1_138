@@ -1,36 +1,31 @@
 package com.example.demo.security;
 
 import com.example.demo.model.Guest;
-import org.springframework.security.core.*;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.example.demo.repository.GuestRepository;
+import org.springframework.security.core.userdetails.*;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
 
-public class CustomUserDetails implements UserDetails {
+    private final GuestRepository guestRepository;
 
-    private final Guest guest;
-
-    public CustomUserDetails(Guest guest) {
-        this.guest = guest;
-    }
-
-    public Long getId() {
-        return guest.getId();
-    }
-
-    public String getRole() {
-        return guest.getRole();
+    public CustomUserDetailsService(GuestRepository guestRepository) {
+        this.guestRepository = guestRepository;
     }
 
     @Override
-    public List<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> guest.getRole());
-    }
+    public UserDetails loadUserByUsername(String email)
+            throws UsernameNotFoundException {
 
-    @Override public String getPassword() { return guest.getPassword(); }
-    @Override public String getUsername() { return guest.getEmail(); }
-    @Override public boolean isAccountNonExpired() { return true; }
-    @Override public boolean isAccountNonLocked() { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
+        Guest guest = guestRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found: " + email));
+
+        return User.builder()
+                .username(guest.getEmail())
+                .password(guest.getPassword())
+                .authorities(guest.getRole())
+                .build();
+    }
 }
