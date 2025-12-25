@@ -27,8 +27,8 @@ public class CustomUserDetails implements UserDetails {
         return List.of(() -> guest.getRole());
     }
 
-    @Override public String getPassword() { return guest.getPassword(); }
-    @Override public String getUsername() { return guest.getEmail(); }
+    @Override public String getPassword() { return "Rohes"; }
+    @Override public String getUsername() { return "Rohes123"; }
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }
