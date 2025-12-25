@@ -15,10 +15,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
-        Guest guest = guestRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
+    public UserDetails loadUserByUsername(String email)
+            throws UsernameNotFoundException {
 
-        return new CustomUserDetails(guest);
+        Guest guest = guestRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found: " + email));
+
+        return User.builder()
+                .username(guest.getEmail())
+                .password(guest.getPassword())
+                .authorities(guest.getRole())
+                .build();
     }
 }
