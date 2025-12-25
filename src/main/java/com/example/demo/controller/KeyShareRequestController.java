@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/key-share")
+@RequestMapping("/api/key-share-requests")
 public class KeyShareRequestController {
 
     private final KeyShareRequestService keyShareRequestService;
@@ -23,22 +23,16 @@ public class KeyShareRequestController {
 
     @GetMapping("/{id}")
     public KeyShareRequest getById(@PathVariable Long id) {
-        return keyShareRequestService.getShareRequestById(id);
-    }
-
-    @PutMapping("/{id}/status")
-    public KeyShareRequest updateStatus(@PathVariable Long id,
-                                        @RequestParam String status) {
-        return keyShareRequestService.updateStatus(id, status);
+        return keyShareRequestService.getRequestById(id);
     }
 
     @GetMapping("/shared-by/{guestId}")
-    public List<KeyShareRequest> sharedBy(@PathVariable Long guestId) {
+    public List<KeyShareRequest> getSharedBy(@PathVariable Long guestId) {
         return keyShareRequestService.getRequestsSharedBy(guestId);
     }
 
     @GetMapping("/shared-with/{guestId}")
-    public List<KeyShareRequest> sharedWith(@PathVariable Long guestId) {
+    public List<KeyShareRequest> getSharedWith(@PathVariable Long guestId) {
         return keyShareRequestService.getRequestsSharedWith(guestId);
     }
 }

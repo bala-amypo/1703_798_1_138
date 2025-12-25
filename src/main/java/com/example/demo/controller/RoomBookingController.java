@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.model.RoomBooking;
 import com.example.demo.service.RoomBookingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,35 +12,36 @@ import java.util.List;
 @RequestMapping("/api/bookings")
 public class RoomBookingController {
 
-    private final RoomBookingService roomBookingService;
-
-    public RoomBookingController(RoomBookingService roomBookingService) {
-        this.roomBookingService = roomBookingService;
-    }
+    @Autowired
+    private RoomBookingService bookingService;
 
     @PostMapping
-    public RoomBooking create(@RequestBody RoomBooking booking) {
-        return roomBookingService.createBooking(booking);
-    }
-
-    @GetMapping("/{id}")
-    public RoomBooking getById(@PathVariable Long id) {
-        return roomBookingService.getBookingById(id);
-    }
-
-    @GetMapping("/guest/{guestId}")
-    public List<RoomBooking> getForGuest(@PathVariable Long guestId) {
-        return roomBookingService.getBookingsForGuest(guestId);
+    public ResponseEntity<RoomBooking> createBooking(@RequestBody RoomBooking booking) {
+        RoomBooking created = bookingService.createBooking(booking);
+        return ResponseEntity.ok(created);
     }
 
     @PutMapping("/{id}")
-    public RoomBooking update(@PathVariable Long id,
-                              @RequestBody RoomBooking booking) {
-        return roomBookingService.updateBooking(id, booking);
+    public ResponseEntity<RoomBooking> updateBooking(@PathVariable Long id, @RequestBody RoomBooking booking) {
+        RoomBooking updated = bookingService.updateBooking(id, booking);
+        return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RoomBooking> getBooking(@PathVariable Long id) {
+        RoomBooking booking = bookingService.getBookingById(id);
+        return ResponseEntity.ok(booking);
+    }
+
+    @GetMapping("/guest/{guestId}")
+    public ResponseEntity<List<RoomBooking>> getBookingsForGuest(@PathVariable Long guestId) {
+        List<RoomBooking> bookings = bookingService.getBookingsForGuest(guestId);
+        return ResponseEntity.ok(bookings);
     }
 
     @PutMapping("/{id}/deactivate")
-    public void deactivate(@PathVariable Long id) {
-        roomBookingService.deactivateBooking(id);
+    public ResponseEntity<Void> deactivateBooking(@PathVariable Long id) {
+        bookingService.deactivateBooking(id);
+        return ResponseEntity.noContent().build();
     }
 }

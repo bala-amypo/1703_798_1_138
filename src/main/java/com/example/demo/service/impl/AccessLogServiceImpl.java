@@ -4,11 +4,7 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.AccessLog;
 import com.example.demo.model.DigitalKey;
 import com.example.demo.model.Guest;
-import com.example.demo.model.KeyShareRequest;
-import com.example.demo.repository.AccessLogRepository;
-import com.example.demo.repository.DigitalKeyRepository;
-import com.example.demo.repository.GuestRepository;
-import com.example.demo.repository.KeyShareRequestRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.AccessLogService;
 import org.springframework.stereotype.Service;
 
@@ -43,36 +39,26 @@ public class AccessLogServiceImpl implements AccessLogService {
         }
 
         DigitalKey key = digitalKeyRepository.findById(log.getDigitalKey().getId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Key not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Key not found"));
 
         Guest guest = guestRepository.findById(log.getGuest().getId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Guest not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Guest not found"));
 
-        boolean success = false;
+        log.setDigitalKey(key);
+        log.setGuest(guest);
 
-        if (key.getActive() &&
-            key.getBooking().getGuest().getId().equals(guest.getId())) {
-            success = true;
+        if (key.getActive() && Instant.now().isBefore(key.getExpiresAt())) {
+            log.setResult("SUCCESS");
+        } else {
+            log.setResult("DENIED");
         }
-
-        if (!success) {
-            List<KeyShareRequest> shares =
-                    keyShareRequestRepository.findBySharedWithId(guest.getId());
-
-            for (KeyShareRequest req : shares) {
-                if (req.getDigitalKey().getId().equals(key.getId())) {
-                    success = true;
-                    break;
-                }
-            }
-        }
-
-        log.setResult(success ? "SUCCESS" : "DENIED");
-        log.setReason(success ? "Access granted" : "Access denied");
 
         return accessLogRepository.save(log);
+    }
+
+    @Override
+    public List<AccessLog> getLogsForGuest(Long guestId) {
+        return accessLogRepository.findByGuestId(guestId);
     }
 
     @Override
@@ -80,8 +66,9 @@ public class AccessLogServiceImpl implements AccessLogService {
         return accessLogRepository.findByDigitalKeyId(keyId);
     }
 
+    // ✅ REQUIRED BY INTERFACE
     @Override
-    public List<AccessLog> getLogsForGuest(Long guestId) {
-        return accessLogRepository.findByGuestId(guestId);
+    public List<AccessLog> getAllLogs() {
+        return accessLogRepository.findAll();
     }
 }
