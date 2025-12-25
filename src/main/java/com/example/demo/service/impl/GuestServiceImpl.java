@@ -4,7 +4,6 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Guest;
 import com.example.demo.repository.GuestRepository;
 import com.example.demo.service.GuestService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,12 +12,9 @@ import java.util.List;
 public class GuestServiceImpl implements GuestService {
 
     private final GuestRepository guestRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public GuestServiceImpl(GuestRepository guestRepository,
-                            PasswordEncoder passwordEncoder) {
+    public GuestServiceImpl(GuestRepository guestRepository) {
         this.guestRepository = guestRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -28,7 +24,7 @@ public class GuestServiceImpl implements GuestService {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        guest.setPassword(passwordEncoder.encode(guest.getPassword()));
+        // ❌ PasswordEncoder removed (plain password stored for now)
         return guestRepository.save(guest);
     }
 
