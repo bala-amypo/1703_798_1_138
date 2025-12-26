@@ -10,22 +10,23 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final GuestRepository guestRepository;
 
-    public CustomUserDetailsService(GuestRepository guestRepository) {
-        this.guestRepository = guestRepository;
-    }
+        public CustomUserDetailsService(GuestRepository guestRepository) {
+                this.guestRepository = guestRepository;
+                    }
 
-    @Override
-    public UserDetails loadUserByUsername(String email)
-            throws UsernameNotFoundException {
+                        @Override
+                            public UserDetails loadUserByUsername(String email)
+                                        throws UsernameNotFoundException {
 
-        Guest guest = guestRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found: " + email));
+                                                Guest guest = guestRepository.findByEmail(email)
+                                                                .orElseThrow(() ->
+                                                                                        new UsernameNotFoundException("User not found: " + email));
 
-        return User.builder()
-                .username(guest.getEmail())
-                .password(guest.getPassword())
-                .authorities(guest.getRole())
-                .build();
-    }
-}
+                                                                                                return User.builder()
+                                                                                                                .username(guest.getEmail())
+                                                                                                                                .password(guest.getPassword())
+                                                                                                                                                .authorities(guest.getRole())
+                                                                                                                                                                .build();
+                                                                                                                                                                    }
+                                                                                                                                                                    }
+                                                                                                                                                                    
